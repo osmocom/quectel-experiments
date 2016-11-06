@@ -10,16 +10,20 @@ LDFLAGS := $(QMI_LIBS)
 
 CFLAGS += $(EXTRA_CFLAGS)
 
-all: qmi_test
+all: qmi_test atcop_test
 
 qmi_test: qmi_test.o
+	$(CC) $(LDFLAGS) -o $@ $^
+
+atcop_test: atcop_test.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean:
-	rm -f *.o qmi_test
+	rm -f *.o qmi_test atcop_test
 
-push: qmi_test
+push: qmi_test atcop_test
 	adb push qmi_test /cache/tmp/
+	adb push atcop_test /cache/tmp/
