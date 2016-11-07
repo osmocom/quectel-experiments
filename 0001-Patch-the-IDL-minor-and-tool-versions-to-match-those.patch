@@ -1,0 +1,147 @@
+From 7305d926ead99eba793c920b7637b6e6fd92590b Mon Sep 17 00:00:00 2001
+From: Harald Welte <laforge@gnumonks.org>
+Date: Sun, 6 Nov 2016 19:37:18 +0100
+Subject: [PATCH] Patch the IDL minor and tool versions to match those of EC20
+
+... there of course might be all kinds of ABI breakage due to
+incompatible message / type definitions, but this way the code at least
+actually runs.
+---
+ qmi/services/card_application_toolkit_v02.h   | 4 ++--
+ qmi/services/device_management_service_v01.h  | 4 ++--
+ qmi/services/network_access_service_v01.h     | 4 ++--
+ qmi/services/phonebook_manager_service_v01.h  | 2 +-
+ qmi/services/user_identity_module_v01.h       | 4 ++--
+ qmi/services/voice_service_v02.h              | 4 ++--
+ qmi/services/wireless_data_service_v01.h      | 4 ++--
+ qmi/services/wireless_messaging_service_v01.h | 4 ++--
+ 8 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/qmi/services/card_application_toolkit_v02.h b/qmi/services/card_application_toolkit_v02.h
+index 3683381..7a7fc7a 100755
+--- a/qmi/services/card_application_toolkit_v02.h
++++ b/qmi/services/card_application_toolkit_v02.h
+@@ -71,9 +71,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define CAT_V02_IDL_MAJOR_VERS 0x02
+ /** Revision Number of the IDL used to generate this file */
+-#define CAT_V02_IDL_MINOR_VERS 0x17
++#define CAT_V02_IDL_MINOR_VERS 0x16
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define CAT_V02_IDL_TOOL_VERS 0x06
++#define CAT_V02_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+ #define CAT_V02_MAX_MESSAGE_ID 0x002E;
+ /** 
+diff --git a/qmi/services/device_management_service_v01.h b/qmi/services/device_management_service_v01.h
+index b2ebe7d..cdf84c3 100755
+--- a/qmi/services/device_management_service_v01.h
++++ b/qmi/services/device_management_service_v01.h
+@@ -71,9 +71,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define DMS_V01_IDL_MAJOR_VERS 0x01
+ /** Revision Number of the IDL used to generate this file */
+-#define DMS_V01_IDL_MINOR_VERS 0x24
++#define DMS_V01_IDL_MINOR_VERS 0x0d
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define DMS_V01_IDL_TOOL_VERS 0x06
++#define DMS_V01_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+ #define DMS_V01_MAX_MESSAGE_ID 0x005D
+ /**
+diff --git a/qmi/services/network_access_service_v01.h b/qmi/services/network_access_service_v01.h
+index 8ddc5d8..210ba2c 100755
+--- a/qmi/services/network_access_service_v01.h
++++ b/qmi/services/network_access_service_v01.h
+@@ -71,9 +71,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define NAS_V01_IDL_MAJOR_VERS 0x01
+ /** Revision Number of the IDL used to generate this file */
+-#define NAS_V01_IDL_MINOR_VERS 0x71
++#define NAS_V01_IDL_MINOR_VERS 0x31
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define NAS_V01_IDL_TOOL_VERS 0x06
++#define NAS_V01_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+ #define NAS_V01_MAX_MESSAGE_ID 0x0092
+ /**
+diff --git a/qmi/services/phonebook_manager_service_v01.h b/qmi/services/phonebook_manager_service_v01.h
+index 45dbfe4..c0219b3 100755
+--- a/qmi/services/phonebook_manager_service_v01.h
++++ b/qmi/services/phonebook_manager_service_v01.h
+@@ -68,7 +68,7 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define PBM_V01_IDL_MAJOR_VERS 0x01
+ /** Revision Number of the IDL used to generate this file */
+-#define PBM_V01_IDL_MINOR_VERS 0x0E
++#define PBM_V01_IDL_MINOR_VERS 0x0A
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+ #define PBM_V01_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+diff --git a/qmi/services/user_identity_module_v01.h b/qmi/services/user_identity_module_v01.h
+index 490af67..9f4ac16 100755
+--- a/qmi/services/user_identity_module_v01.h
++++ b/qmi/services/user_identity_module_v01.h
+@@ -70,9 +70,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define UIM_V01_IDL_MAJOR_VERS 0x01
+ /** Revision Number of the IDL used to generate this file */
+-#define UIM_V01_IDL_MINOR_VERS 0x25
++#define UIM_V01_IDL_MINOR_VERS 0x17
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define UIM_V01_IDL_TOOL_VERS 0x06
++#define UIM_V01_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+ #define UIM_V01_MAX_MESSAGE_ID 0x004D
+ /** 
+diff --git a/qmi/services/voice_service_v02.h b/qmi/services/voice_service_v02.h
+index 2858281..b24600a 100755
+--- a/qmi/services/voice_service_v02.h
++++ b/qmi/services/voice_service_v02.h
+@@ -71,9 +71,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define VOICE_V02_IDL_MAJOR_VERS 0x02
+ /** Revision Number of the IDL used to generate this file */
+-#define VOICE_V02_IDL_MINOR_VERS 0x2A
++#define VOICE_V02_IDL_MINOR_VERS 0x14
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define VOICE_V02_IDL_TOOL_VERS 0x06
++#define VOICE_V02_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+ #define VOICE_V02_MAX_MESSAGE_ID 0x0061
+ /**
+diff --git a/qmi/services/wireless_data_service_v01.h b/qmi/services/wireless_data_service_v01.h
+index b83d6d9..aecf13b 100755
+--- a/qmi/services/wireless_data_service_v01.h
++++ b/qmi/services/wireless_data_service_v01.h
+@@ -71,9 +71,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define WDS_V01_IDL_MAJOR_VERS 0x01
+ /** Revision Number of the IDL used to generate this file */
+-#define WDS_V01_IDL_MINOR_VERS 0x29
++#define WDS_V01_IDL_MINOR_VERS 0x1B
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define WDS_V01_IDL_TOOL_VERS 0x06
++#define WDS_V01_IDL_TOOL_VERS 0x05
+ /** Maximum Defined Message ID */
+ #define WDS_V01_MAX_MESSAGE_ID 0x0091;
+ /**
+diff --git a/qmi/services/wireless_messaging_service_v01.h b/qmi/services/wireless_messaging_service_v01.h
+index 5ac450f..6bf3f77 100755
+--- a/qmi/services/wireless_messaging_service_v01.h
++++ b/qmi/services/wireless_messaging_service_v01.h
+@@ -71,9 +71,9 @@ extern "C" {
+ /** Major Version Number of the IDL used to generate this file */
+ #define WMS_V01_IDL_MAJOR_VERS 0x01
+ /** Revision Number of the IDL used to generate this file */
+-#define WMS_V01_IDL_MINOR_VERS 0x12
++#define WMS_V01_IDL_MINOR_VERS 0x05
+ /** Major Version Number of the qmi_idl_compiler used to generate this file */
+-#define WMS_V01_IDL_TOOL_VERS 0x06
++#define WMS_V01_IDL_TOOL_VERS 0x04
+ /** Maximum Defined Message ID */
+ #define WMS_V01_MAX_MESSAGE_ID 0x005F;
+ /** 
+-- 
+2.10.2
+
