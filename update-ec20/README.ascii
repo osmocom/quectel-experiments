@@ -1,0 +1,8 @@
+Handling of EC20 FOTA updates
+=============================
+
+See https://osmocom.org/projects/quectel-modems/wiki/EC20_DFOTA
+for general information. This is a script to dissect and maybe
+re-assemble the system.diff file. Let's see how far we get.
+
+
