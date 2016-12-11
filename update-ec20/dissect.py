@@ -42,7 +42,7 @@ print("Guessing CRC to match {} {}".format(
         crc32.calculate(blen+chunk1)))
 
 # read padding
-if len(chunk1) % 4 > 0:
+if len(chunk1) % 4 > 2:
     rstr.read(4 - (len(chunk1) % 4))
 
 # Parse the trailer
