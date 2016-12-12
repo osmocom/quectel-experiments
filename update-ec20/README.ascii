@@ -6,3 +6,64 @@ for general information. This is a script to dissect and maybe
 re-assemble the system.diff file. Let's see how far we get.
 
 
+
+
+0x0000d084 in is_expected_sig ()
+r10            0x29079d54	688364884
+r11            0x2e4c8	189640
+r12            0xd4184197	-736607849
+
+r10 / r12 in is_expected_sig compares crc32.. r10 is result,
+r12 is expecation..
+
+
+LDR     R0, [SP,#0xA0+var_48]
+LDR     R1, [SP,#0xA0+var_54]
+LDR     R2, [SP,#0xA0+var_60]
+ADD     R3, SP, #0xA0+var_2C
+BL      _RB_LzmaDecode
+
+int LzmaDecode(CLzmaDecoderState *vs,
+    #ifdef _LZMA_IN_CB
+    ILzmaInCallback *InCallback,
+    #else
+    const unsigned char *inStream, SizeT inSize, SizeT *inSizeProcessed,
+    #endif
+    unsigned char *outStream, SizeT outSize, SizeT *outSizeProcessed)
+
+So mpst likely InCallback, outStream, outSize, outSizeProcessed...
+
+
+int LzmaDecoderInit(
+    unsigned char *buffer, UInt32 bufferSize,
+    int lc, int lp, int pb,
+    unsigned char *dictionary, UInt32 dictionarySize,
+    #ifdef _LZMA_IN_CB
+    ILzmaInCallback *inCallback
+    #else
+    unsigned char *inStream, UInt32 inSize
+    #endif
+    )
+
+
+
+Breakpoint 16, 0x0001b938 in _RB_LzmaDecoderInit ()
+(gdb) info registers
+r0             0x40989240	1083740736		buffer
+r1             0x3ec0	16064				bufferSize
+r2             0x3	3				lc
+r3             0x0	0				lp
+r4             0x2	2				pb
+r5             0x407ffaac	1082129068		dictionary
+r6             0x0	0				dictsize
+r7             0x2f6c0	194240				CB
+r8             0x1	1
+r9             0x40987e54	1083735636
+r10            0x0	0
+r11            0x3	3
+r12            0x13ec	5100
+sp             0x407ffa20	0x407ffa20
+lr             0x17bb4	97204
+pc             0x1b938	0x1b938 <_RB_LzmaDecoderInit>
+cpsr           0x60000010	1610612752
+
