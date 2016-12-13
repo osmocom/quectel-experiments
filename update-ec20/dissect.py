@@ -8,6 +8,7 @@ import sys
 import struct
 import io
 import binascii
+import lzma
 from PyCRC import CRC32
 
 # initialize the tables once
@@ -94,7 +95,25 @@ lzma now?
     print("Delta Info: num_link - %d" % num_link)
     print("Delta Info: num_critical_update - %d" % num_cupd)
     print("Delta Info: num_critical_insert - %d" % num_cins)
-    #print(hexstring(upd_dat))
+
+    # dump it temporarily
+    d = rstr.read()
+    with open("foo.bin", "wb") as f:
+        f.write(d)
+
+    # parse the index area...
+    rstr = io.BytesIO(d)
+    idx_len = (8 * num_diff) + (4 * num_inse)
+    idx = rstr.read(idx_len)
+    assert len(idx) == idx_len
+
+    # decompress that file table...
+    compr = lzma.LZMADecompressor()
+    d = compr.decompress(rstr.read())
+    print(d)
+    print(hexstring(compr.unused_data))
+
+    # XXX... how long is the _rest_ how to index
 
 # Parse the chunk..
 checksum = rstr.read(4)

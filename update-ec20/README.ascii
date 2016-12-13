@@ -6,6 +6,12 @@ for general information. This is a script to dissect and maybe
 re-assemble the system.diff file. Let's see how far we get.
 
 
+After the header is a table of data.. before the first LZMA
+compressed update. The size of that area seems to be computed
+as:
+	8 * num_diffs (maybe two CRC32?)
+	4 * num_insert (maybe a single CRC32)?
+	followed by lzma
 
 
 0x0000d084 in is_expected_sig ()
