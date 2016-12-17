@@ -1,0 +1,132 @@
+From 14a25a93b875d71ac0a0133b7a63b2cdf0eb4010 Mon Sep 17 00:00:00 2001
+From: Harald Welte <laforge@gnumonks.org>
+Date: Sat, 17 Dec 2016 18:25:44 +0100
+Subject: [PATCH 3/3] qmi_wwan: Dynamically detect interface number on QC
+ Android Kernels
+
+Some modem devices (Quectel EC20, EC21, EC25; Huawei ME906v, ...) a well
+as many smartphones internally run a Qualcomm chipset with a Qualcomm
+Android Linux kernel.  That kernel implements also the USB gadget
+functionality, and there are many different gadgets that can be bound to
+various interfaces in arbitrary order.  The old assumption to use fixed
+interface numbers doesn't hold true and might change depending on the
+firmware version / configuration used.
+
+Those interfaces implemented by the f_serial gadget can be deteted by
+matching on 3 endpoints, InterfaceClass=255, InterfaceSubClass=255 and
+InterfaceProtocol=255.  This is distinct from those other interfaces which
+implement e.g. diag, adb or serial devices.
+
+Signed-off-by: Harald Welte <laforge@gnumonks.org>
+---
+ drivers/net/usb/qmi_wwan.c | 52 ++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 50 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 3ff76c6db4f6..4392de871715 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -61,6 +61,7 @@ enum qmi_wwan_flags {
+ 
+ enum qmi_wwan_quirks {
+ 	QMI_WWAN_QUIRK_DTR = 1 << 0,	/* needs "set DTR" request */
++	QMI_WWAN_QUIRK_ANDROID = 1 << 1,/* has Android USB gadget on device */
+ };
+ 
+ static void qmi_wwan_netdev_setup(struct net_device *net)
+@@ -545,6 +546,26 @@ static const struct driver_info	qmi_wwan_info_quirk_dtr = {
+ 	.data           = QMI_WWAN_QUIRK_DTR,
+ };
+ 
++static const struct driver_info	qmi_android_wwan_info = {
++	.description	= "WWAN/QMI device (Android Gadget)",
++	.flags		= FLAG_WWAN,
++	.bind		= qmi_wwan_bind,
++	.unbind		= qmi_wwan_unbind,
++	.manage_power	= qmi_wwan_manage_power,
++	.rx_fixup       = qmi_wwan_rx_fixup,
++	.data           = QMI_WWAN_QUIRK_ANDROID,
++};
++
++static const struct driver_info	qmi_android_wwan_info_quirk_dtr = {
++	.description	= "WWAN/QMI device (Android Gadget)",
++	.flags		= FLAG_WWAN,
++	.bind		= qmi_wwan_bind,
++	.unbind		= qmi_wwan_unbind,
++	.manage_power	= qmi_wwan_manage_power,
++	.rx_fixup       = qmi_wwan_rx_fixup,
++	.data           = QMI_WWAN_QUIRK_DTR|QMI_WWAN_QUIRK_ANDROID,
++};
++
+ #define HUAWEI_VENDOR_ID	0x12D1
+ 
+ /* map QMI/wwan function by a fixed interface number */
+@@ -565,6 +586,16 @@ static const struct driver_info	qmi_wwan_info_quirk_dtr = {
+ #define QMI_GOBI_DEVICE(vend, prod) \
+ 	QMI_FIXED_INTF(vend, prod, 0)
+ 
++/* QMI device implemented by Qualcomm Android Kernel USB gadget */
++#define QMI_ANDROID(vend, prod) \
++	USB_DEVICE(vend, prod),		\
++	.driver_info = (unsigned long)&qmi_android_wwan_info
++
++/* QMI device implemented by Qualcomm Android Kernel USB gadget */
++#define QMI_ANDROID_DTR(vend, prod) \
++	USB_DEVICE(vend, prod),		\
++	.driver_info = (unsigned long)&qmi_android_wwan_info_quirk_dtr
++
+ static const struct usb_device_id products[] = {
+ 	/* 1. CDC ECM like devices match on the control interface */
+ 	{	/* Huawei E392, E398 and possibly others sharing both device id and more... */
+@@ -919,8 +950,6 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
+ 	{QMI_FIXED_INTF(0x1e0e, 0x9001, 5)},	/* SIMCom 7230E */
+-	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0125, 4)},	/* Quectel EC25, EC20 R2.0  Mini PCIe */
+-	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0121, 4)},	/* Quectel EC21 Mini PCIe */
+ 
+ 	/* 4. Gobi 1000 devices */
+ 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+@@ -979,6 +1008,11 @@ static const struct usb_device_id products[] = {
+ 	{QMI_GOBI_DEVICE(0x12d1, 0x14f1)},	/* Sony Gobi 3000 Composite */
+ 	{QMI_GOBI_DEVICE(0x1410, 0xa021)},	/* Foxconn Gobi 3000 Modem device (Novatel E396) */
+ 
++	/* Mulit-interface devices, dynamic detection of interface */
++	{QMI_ANDROID_DTR(0x2c7c, 0x0125)},	/* Quectel EC25, EC20 R2.0  Mini PCIe */
++	{QMI_ANDROID_DTR(0x2c7c, 0x0121)},	/* Quectel EC21 Mini PCIe */
++	{QMI_ANDROID(0x1d50, 0x4020)},	/* Quectel EC20 with Osmocom mod */
++
+ 	{ }					/* END */
+ };
+ MODULE_DEVICE_TABLE(usb, products);
+@@ -1001,6 +1035,8 @@ static int qmi_wwan_probe(struct usb_interface *intf,
+ {
+ 	struct usb_device_id *id = (struct usb_device_id *)prod;
+ 	struct usb_interface_descriptor *desc = &intf->cur_altsetting->desc;
++	const struct driver_info *drv_info =
++		(const struct driver_info *) id->driver_info;
+ 
+ 	/* Workaround to enable dynamic IDs.  This disables usbnet
+ 	 * blacklisting functionality.  Which, if required, can be
+@@ -1018,6 +1054,18 @@ static int qmi_wwan_probe(struct usb_interface *intf,
+ 		return -ENODEV;
+ 	}
+ 
++	/* use some heuristics if this interface is a qmi_wwan interface
++	 * or something else.  If it is qmi_wwan, let's bind to it */
++	if (drv_info->data & QMI_WWAN_QUIRK_ANDROID &&
++	    (desc->bInterfaceClass != 0xff ||
++	     desc->bInterfaceSubClass != 0xff ||
++	     desc->bInterfaceProtocol != 0xff ||
++	     desc->bNumEndpoints != 3)) {
++		dev_dbg(&intf->dev, "QMI Android quirk, skipping "
++			"interface %d", desc->bInterfaceNumber);
++		return -ENODEV;
++	}
++
+ 	return usbnet_probe(intf, id);
+ }
+ 
+-- 
+2.11.0
+
