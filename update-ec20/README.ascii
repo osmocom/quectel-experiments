@@ -11,7 +11,17 @@ compressed update. The size of that area seems to be computed
 as:
 	8 * num_diffs (maybe two CRC32?)
 	4 * num_insert (maybe a single CRC32)?
-	followed by lzma
+	followed by lzma... TOC of size compress_sz
+	LZMA again.. depends on the TOC.. delta_pos contains addr
+
+
+LZMA needs to be compressed in 'alone' format and needs to have
+the decompressed size in the header! 0xFF... leads to parse error
+xz -F alone demo.sh
+
+LZMA: https://github.com/nobled/xz/commit/7d17818cec8597f847b0a2537fde991bbc3d9e96
+removed uncompressed_size support. So an plder version is needed..
+or use the original lzma SDK
 
 
 0x0000d084 in is_expected_sig ()
