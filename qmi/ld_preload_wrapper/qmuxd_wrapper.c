@@ -70,7 +70,8 @@ ssize_t write(int fd, const void *buf, size_t count)
 {
 	dump_qmuxd(fd, 1, buf, count);
 
-	real_write = dlsym(RTLD_NEXT, "write");
+	if (!real_write)
+		real_write = dlsym(RTLD_NEXT, "write");
 	return real_write(fd, buf, count);
 }
 
@@ -78,7 +79,8 @@ ssize_t read(int fd, void *buf, size_t count)
 {
 	dump_qmuxd(fd, 0, buf, count);
 
-	real_read = dlsym(RTLD_NEXT, "read");
+	if (!real_read)
+		real_read = dlsym(RTLD_NEXT, "read");
 	return real_read(fd, buf, count);
 }
 
@@ -86,7 +88,8 @@ ssize_t send(int fd, const void *buf, size_t count, int flags)
 {
 	dump_qmuxd(fd, 1, buf, count);
 
-	real_send = dlsym(RTLD_NEXT, "send");
+	if (!real_send)
+		real_send = dlsym(RTLD_NEXT, "send");
 	return real_send(fd, buf, count, flags);
 }
 
@@ -94,7 +97,8 @@ ssize_t recv(int fd, void *buf, size_t len, int flags)
 {
 	dump_qmuxd(fd, 0, buf, len);
 
-	real_recv = dlsym(RTLD_NEXT, "recv");
+	if (!real_recv)
+		real_recv = dlsym(RTLD_NEXT, "recv");
 	return real_recv(fd, buf, len, flags);
 }
 
@@ -108,7 +112,8 @@ int connect(int fd, const struct sockaddr *addr, socklen_t addrlen)
 		}
 	}
 
-	real_connect = dlsym(RTLD_NEXT, "connect");
+	if (!real_connect)
+		real_connect = dlsym(RTLD_NEXT, "connect");
 	return real_connect(fd, addr, addrlen);
 }
 
@@ -122,6 +127,7 @@ int close(int fd)
 			trace_fds[i] = -1;
 		}
 	}
-	real_close = dlsym(RTLD_NEXT, "close");
+	if (!real_close)
+		real_close = dlsym(RTLD_NEXT, "close");
 	return real_close(fd);
 }
