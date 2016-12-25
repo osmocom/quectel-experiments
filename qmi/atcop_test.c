@@ -15,11 +15,15 @@ static void at_command_cb(int user_handle, qmi_service_id_type service_id,
 	printf("at_command_cb()\n");
 }
 
+/* here we can register forwarding for certain AT commands.  Qualcomm
+ * default sems to be +CLVL, +CKPD, +CMUT, +CTSA, +CBKLT, +CFUN, +CDIS,
+ * +CRSL, +CMAR, +CSO, +CSS, +CBC, $QCPWRDN - this may bee extended by
+ * vendor-specific commands, such as +QFOTADL in the quectel case */
 static qmi_atcop_at_cmd_fwd_req_type at_cmd_fw_tbl[] = {
 	{
 		.num_of_cmds = 1,
 		.qmi_atcop_at_cmd_fwd_req_type = {
-			{ QMI_ATCOP_AT_CMD_NOT_ABORTABLE, "+SYSMO" },
+			{ QMI_ATCOP_AT_CMD_NOT_ABORTABLE, "+QFOTADL" },
 		},
 	},
 };
@@ -105,6 +109,9 @@ int main(int argc, char **argv)
 		exit(1);
 
 	printf("Initialization done\n");
+
+	while (1) {
+	}
 
 	exit(0);
 }
