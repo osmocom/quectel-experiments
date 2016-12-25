@@ -120,7 +120,7 @@ static void stream_append(struct qmuxd_stream *qs, const void *data, size_t len)
 		exit(2342);
 	}
 
-	memcpy(&qs->buf + qs->buf_used, data, len);
+	memcpy(qs->buf + qs->buf_used, data, len);
 	qs->buf_used += len;
 }
 
