@@ -1,5 +1,5 @@
 CFLAGS=-fPIC -Wall
-LDFLAGS=-shared -ldl
+LDFLAGS=-shared -ldl -lpthread
 
 all: qmuxd_wrapper.so
 

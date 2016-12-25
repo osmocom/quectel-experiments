@@ -11,7 +11,7 @@
 
 #include "qmuxd_protocol.h"
 
-static char hexd_buff[4096];
+static __thread char hexd_buff[4096];
 static const char hex_chars[] = "0123456789abcdef";
 
 static char *_osmo_hexdump(const unsigned char *buf, int len, char *delim)
