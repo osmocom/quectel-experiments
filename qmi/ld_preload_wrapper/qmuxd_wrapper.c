@@ -80,6 +80,12 @@ struct qmuxd_fd {
 #define STR_PR(qs, fmt, args ...)	\
 	printf("%d %s " fmt, (qs)->qfd->fd, (qs)->to_qmuxd ? "=>" : "<=", ## args)
 
+#ifdef DEBUG
+#define STR_PR_DBG(qs, fmt, args ...)	STR_PR(qs, fmt, ## args)
+#else
+#define STR_PR_DBG(qs, fmt, args ...)
+#endif
+
 static struct qmuxd_fd trace_fds[16] = { { .fd = -1, }, };
 static int num_trace_fds = 0;
 
@@ -120,7 +126,7 @@ static void stream_append(struct qmuxd_stream *qs, const void *data, size_t len)
 
 static void stream_consume(struct qmuxd_stream *qs, size_t len)
 {
-	STR_PR(qs, "consuming %u bytes from head of stream\n", len);
+	STR_PR_DBG(qs, "consuming %u bytes from head of stream\n", len);
 	if (len >= qs->buf_used) {
 		memset(qs->buf, 0, sizeof(qs->buf));
 		qs->buf_used = 0;
@@ -140,7 +146,7 @@ static void _handle_data(struct qmuxd_fd *qfd, int to_qmux, const void *data, si
 	else
 		qs = &qfd->from_qmuxd;
 
-	STR_PR(qs, "raw(%04x): %s\n", len, osmo_hexdump(data, len));
+	STR_PR_DBG(qs, "raw(%04x): %s\n", len, osmo_hexdump(data, len));
 
 	stream_append(qs, data, len);
 
@@ -148,7 +154,7 @@ static void _handle_data(struct qmuxd_fd *qfd, int to_qmux, const void *data, si
 	case ST_WAIT_CLID:
 		if (qs->buf_used >= 4) {
 			stream_consume(qs, 4);
-			STR_PR(qs, "transitioning ST_WAIT_CLID->ST_ACTIVE\n");
+			STR_PR_DBG(qs, "transitioning ST_WAIT_CLID->ST_ACTIVE\n");
 			qs->stream_state = ST_ACTIVE;
 		}
 		break;
@@ -163,14 +169,14 @@ static void _handle_data(struct qmuxd_fd *qfd, int to_qmux, const void *data, si
 				if (qs->cur_msg_len == 0)
 					qs->cur_msg_len = 0x2c0;
 				qs->qmux_client_id = qs->qch->platform.qmux_client_id;
-				STR_PR(qs, "msg_len=0x%x, cli_id=0x%x -> MSG_ST_WAIT_QH\n", qs->cur_msg_len, qs->qmux_client_id);
+				STR_PR_DBG(qs, "msg_len=0x%x, cli_id=0x%x -> MSG_ST_WAIT_QH\n", qs->cur_msg_len, qs->qmux_client_id);
 				qs->msg_state = MSG_ST_WAIT_QH;
 			}
 			/* fall-through */
 		case MSG_ST_WAIT_QH:
 			if (qs->buf_used >= sizeof(*qs->qch)) {
 				qs->msg_state = MSG_ST_PAYLOAD;
-				STR_PR(qs, "->MSG_ST_PAYLOAD\n");
+				STR_PR_DBG(qs, "->MSG_ST_PAYLOAD\n");
 			}
 			/* fall-through */
 		case MSG_ST_PAYLOAD:
