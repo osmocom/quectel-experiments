@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Put this script on an EC20 and execute it. It will change
+# * the USB Vendor/Product ID to 0x1d50/0x4020
+# * the composition to ADB + DIAG + NMEA + AT Port + AT PORT + QMI_RMNET
+
+echo "Switching to Osmocom specific USB composition"
+
+if [ "$1" = "y" ]; then
+	num="1"
+	mode="hsic"
+else
+	num="0"
+	mode="hsusb"
+fi
+
+echo $mode > /sys/bus/platform/devices/usb_bam/enable
+echo 0 > /sys/class/android_usb/android$num/enable
+echo 0x4020 > /sys/class/android_usb/android$num/idProduct
+echo 0x1d50 > /sys/class/android_usb/android$num/idVendor
+echo diag > /sys/class/android_usb/android0/f_diag/clients
+echo tty,smd,smd > /sys/class/android_usb/android$num/f_serial/transports
+echo SMD,BAM2BAM > /sys/class/android_usb/android$num/f_rmnet/transports
+echo adb,diag,serial,rmnet > /sys/class/android_usb/android$num/functions
+echo 1 > /sys/class/android_usb/android$num/remote_wakeup
+echo 1 > /sys/class/android_usb/android$num/enable
